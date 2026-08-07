@@ -1,0 +1,18 @@
+{
+  "name": "asc-skills-connect-dashboards-preview",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Dev-only Vite scaffold to actually render the four asc_*_dashboard_live.jsx components in a browser. Not part of the deployable app — those files have no build tooling of their own (see top-level README's Known gaps).",
+  "scripts": {
+    "dev": "vite --port 5173"
+  },
+  "dependencies": {
+    "lucide-react": "^0.462.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}

@@ -1,0 +1,4 @@
+node_modules/
+*.log
+employer-api/uploads/
+employer-api/.env
