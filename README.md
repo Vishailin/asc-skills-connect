@@ -1,5 +1,6 @@
 # ASC Skills Connect
 
+[![CI](https://github.com/Vishailin/asc-skills-connect/actions/workflows/ci.yml/badge.svg)](https://github.com/Vishailin/asc-skills-connect/actions/workflows/ci.yml)
 [![GitHub repo](https://img.shields.io/badge/GitHub-Vishailin%2Fasc--skills--connect-181717?logo=github)](https://github.com/Vishailin/asc-skills-connect)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
