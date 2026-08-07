@@ -33,6 +33,14 @@ node server.js           # terminal 1 -> http://localhost:4000
 node worker.js            # terminal 2 -> background matching job
 ```
 
+Or, as one command via Docker (Postgres, migrations/seeds, API, and the
+worker, all containerized — see [`DEPLOYMENT.md`](DEPLOYMENT.md) for
+what it takes to point this at a real host):
+
+```bash
+docker compose up --build
+```
+
 Requires PostgreSQL (17+) and Node.js (18+) on `PATH`. The five `.jsx`
 files (`asc_*_live.jsx`) have no build tooling of their own —
 `frontend/` is a minimal dev-only Vite scaffold that imports and renders

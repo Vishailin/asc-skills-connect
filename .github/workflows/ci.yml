@@ -104,3 +104,37 @@ jobs:
       - name: Build dashboards (syntax/compile check)
         working-directory: frontend
         run: npx vite build
+
+  docker-compose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Proves the actual deployment artifact (the Dockerfile + compose
+      # stack, not just "npm start" on the runner) boots against a real
+      # Postgres, applies every migration/seed, and serves traffic.
+      - name: Build and start the full stack
+        run: docker compose up --build -d
+
+      - name: Wait for the API to come up
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4000/api/health && exit 0
+            sleep 2
+          done
+          echo "API never became healthy" >&2
+          exit 1
+
+      - name: Smoke test
+        run: |
+          curl -sf http://localhost:4000/api/health
+          curl -sf http://localhost:4000/api/career-fields > /dev/null
+
+      - name: Show logs
+        if: always()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

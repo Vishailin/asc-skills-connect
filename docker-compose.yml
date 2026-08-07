@@ -1,0 +1,87 @@
+# Prod-like local stack: real Postgres, migrations/seeds applied the
+# same way verify.sh and CI do it, then the API and worker as separate
+# containers built from the same image (employer-api/Dockerfile).
+#
+# Usage:
+#   docker compose up --build
+#   curl http://localhost:4000/api/health
+#
+# Not meant to replace a real deployment target's managed Postgres —
+# this is for proving the containers themselves work, and for local
+# prod-like testing before pointing a real host at the same image.
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: learner_registration_database
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: postgres:17
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./learner_registration_database:/db:ro
+    environment:
+      PGPASSWORD: postgres
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        set -e &&
+        for f in /db/migrations/*.sql; do
+          echo "== applying $$f ==";
+          psql -h postgres -U postgres -d learner_registration_database -v ON_ERROR_STOP=1 -f "$$f";
+        done &&
+        for f in /db/seeds/*.sql; do
+          echo "== applying $$f ==";
+          psql -h postgres -U postgres -d learner_registration_database -v ON_ERROR_STOP=1 -f "$$f";
+        done
+
+  api:
+    build: ./employer-api
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: learner_registration_database
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-do-not-use-in-production}
+      JWT_EXPIRES_IN: 8h
+      PORT: 4000
+      NOTIFICATION_PROVIDER: console
+    ports:
+      - "4000:4000"
+    volumes:
+      - uploads:/app/uploads
+
+  worker:
+    build: ./employer-api
+    command: ["node", "worker.js"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: learner_registration_database
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+
+volumes:
+  pgdata:
+  uploads:
