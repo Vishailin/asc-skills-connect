@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  database-and-api:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: learner_registration_database
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGPASSWORD: postgres
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: learner_registration_database
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install postgresql-client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      # Mirrors verify.sh's migration/seed loop (Linux paths instead of
+      # the Windows-specific ones verify.sh uses for local dev).
+      - name: Apply migrations
+        run: |
+          for f in learner_registration_database/migrations/*.sql; do
+            echo "== applying $f =="
+            psql -h localhost -U postgres -d learner_registration_database -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: Apply seeds
+        run: |
+          for f in learner_registration_database/seeds/*.sql; do
+            echo "== applying $f =="
+            psql -h localhost -U postgres -d learner_registration_database -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: Sanity queries
+        run: |
+          psql -h localhost -U postgres -d learner_registration_database -c \
+            "SELECT full_name, province, highest_qualification, availability_status FROM learner_search_view ORDER BY full_name;"
+          psql -h localhost -U postgres -d learner_registration_database -c \
+            "SELECT full_name, prior_funded_programme_count FROM tsp_candidate_view ORDER BY full_name;"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install API dependencies
+        working-directory: employer-api
+        run: npm ci
+
+      - name: Boot the API and smoke-test it
+        working-directory: employer-api
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:4000/api/health && break
+            sleep 1
+          done
+          curl -sf http://localhost:4000/api/health
+          curl -sf http://localhost:4000/api/career-fields > /dev/null
+          kill $SERVER_PID
+
+  frontend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # frontend/ is a dev-only preview scaffold (see its package.json and
+      # the top-level README's Known gaps) with no "build" script of its
+      # own, but a production build is still the cheapest way to catch a
+      # JSX syntax error across all five asc_*_live.jsx dashboards.
+      - name: Build dashboards (syntax/compile check)
+        working-directory: frontend
+        run: npx vite build
