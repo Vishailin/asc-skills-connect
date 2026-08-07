@@ -1,6 +1,7 @@
 # ASC Skills Connect
 
 [![GitHub repo](https://img.shields.io/badge/GitHub-Vishailin%2Fasc--skills--connect-181717?logo=github)](https://github.com/Vishailin/asc-skills-connect)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 A workforce development platform for Africa Skills Connect (Pty) Ltd — one
 journey for every learner: **Register → Verify → Match → Train → Place →
