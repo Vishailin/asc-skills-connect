@@ -1,5 +1,7 @@
 # ASC Skills Connect
 
+[![GitHub repo](https://img.shields.io/badge/GitHub-Vishailin%2Fasc--skills--connect-181717?logo=github)](https://github.com/Vishailin/asc-skills-connect)
+
 A workforce development platform for Africa Skills Connect (Pty) Ltd — one
 journey for every learner: **Register → Verify → Match → Train → Place →
 Track Employment**. Five roles (Learner, Employer, TSP, Funder, Admin),
