@@ -60,6 +60,7 @@ that **must** be overridden before this is live for real users:
 |---|---|
 | `JWT_SECRET` | Defaults to an insecure dev-only string — `server.js` prints a warning on startup for exactly this reason. Generate one with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
 | `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Point at the real production database, not localhost |
+| `CORS_ORIGIN` | Defaults to `http://localhost:5173` (the dev scaffold) — `server.js` prints a warning on startup if unset. Set it to the real frontend's origin(s) once a domain exists, comma-separated if there's more than one (e.g. a staging + production domain) |
 
 Everything else (`JWT_EXPIRES_IN`, `PORT`, `NOTIFICATION_PROVIDER`) can
 stay at its documented default unless there's a specific reason to
@@ -68,7 +69,7 @@ change it.
 ## Pre-launch checklist
 
 - [ ] `JWT_SECRET` set to a real generated value (not the `.env.example` default)
-- [ ] **CORS is currently wide open** (`app.use(cors())` in `server.js` with no origin restriction) — fine for local dev, but should be locked to the real frontend's domain before going live
+- [ ] `CORS_ORIGIN` set to the real frontend domain(s) — enforced in code (`server.js` rejects any other browser origin), defaults to the dev scaffold's origin only, with a startup warning if left unset
 - [ ] Uploaded documents (`storage.js`, local disk under `employer-api/uploads/`) are on a volume that survives redeploys — an ephemeral filesystem will silently lose them
 - [ ] Postgres has backups configured — nothing in this repo handles that
 - [ ] `NOTIFICATION_PROVIDER` is still `console` (stub) — real learners won't get real notifications until `notifier.js` gets a real provider (see its README section)
