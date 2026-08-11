@@ -33,8 +33,29 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET || "dev-only-secret-do-not-use-in-production";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "8h";
 
+// Comma-separated list of allowed frontend origins. Falls back to the
+// Vite dev scaffold's own origin so local dev keeps working with zero
+// config — but that default is not a real domain, so it's called out
+// the same way the JWT_SECRET default is.
+if (!process.env.CORS_ORIGIN) {
+  console.warn("[server] CORS_ORIGIN not set — allowing only http://localhost:5173 (the dev scaffold). Set it to the real frontend domain before deploying anywhere real.");
+}
+const CORS_ORIGINS = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const app = express();
-app.use(cors());
+app.use(cors({
+  // No Origin header (curl, server-to-server, same-origin) is always
+  // allowed — only cross-origin browser requests are restricted.
+  origin(origin, callback) {
+    if (!origin || CORS_ORIGINS.includes(origin)) return callback(null, true);
+    const err = new Error(`Origin ${origin} is not allowed by CORS`);
+    err.corsRejected = true;
+    callback(err);
+  },
+}));
 app.use(express.json());
 
 // =======================================================================
@@ -1562,6 +1583,9 @@ app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     const message = err.code === "LIMIT_FILE_SIZE" ? "File too large (10MB max)" : err.message;
     return res.status(413).json({ error: message });
+  }
+  if (err.corsRejected) {
+    return res.status(403).json({ error: "Origin not allowed" });
   }
   console.error(err);
   res.status(500).json({ error: "Unexpected server error" });
