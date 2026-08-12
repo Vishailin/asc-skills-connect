@@ -13,7 +13,12 @@ const SLATE = "#3C4854";
 const MUTED = "#7E8C8C";
 
 // Point this at wherever the API from employer-api/server.js is deployed.
-const API_BASE = "http://localhost:4000";
+// Empty string in production means same-origin ("" + "/api/..." = "/api/...") —
+// the built frontend is served by the same Express process as the API
+// (see server.js), so no cross-origin call or CORS_ORIGIN config is
+// needed there. Only overridden for local dev against a separate API
+// process, or if the frontend and API are ever split across origins.
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:4000";
 const TOKEN_KEY = "asc_tsp_token";
 
 const PROVINCES = ["Gauteng", "Western Cape", "KwaZulu-Natal", "Eastern Cape", "Limpopo", "Free State", "Mpumalanga", "North West", "Northern Cape"];
