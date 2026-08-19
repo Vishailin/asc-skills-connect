@@ -3,3 +3,4 @@ node_modules/
 employer-api/uploads/
 employer-api/.env
 frontend/dist/
+.artifacts/
