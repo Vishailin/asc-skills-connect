@@ -21,31 +21,41 @@ module's README rather than swept under the rug.
 
 ## Quick start
 
+The whole thing, one command (Postgres, migrations/seeds, the web app —
+API + frontend, served together — and the background worker, all
+containerized):
+
+```bash
+docker compose up --build
+open http://localhost:4000   # the actual app
+```
+
+Or without Docker:
+
 ```bash
 # 1. Database — rebuilds from scratch and applies every migration + seed
 bash verify.sh
 
-# 2. API + background worker (separate terminals)
-cd employer-api
+# 2. Frontend — build once (skip this to run API-only)
+cd frontend
+npm install
+VITE_API_BASE="" npm run build
+
+# 3. API + background worker (separate terminals)
+cd ../employer-api
 npm install
 cp .env.example .env    # optional — zero-config local defaults work out of the box
-node server.js           # terminal 1 -> http://localhost:4000
+node server.js           # terminal 1 -> http://localhost:4000 (serves the app + API)
 node worker.js            # terminal 2 -> background matching job
 ```
 
-Or, as one command via Docker (Postgres, migrations/seeds, API, and the
-worker, all containerized — see [`DEPLOYMENT.md`](DEPLOYMENT.md) for
-what it takes to point this at a real host):
+Requires PostgreSQL (17+) and Node.js (18+) on `PATH`. See
+[`DEPLOYMENT.md`](DEPLOYMENT.md) for what it takes to point any of this
+at a real host.
 
-```bash
-docker compose up --build
-```
-
-Requires PostgreSQL (17+) and Node.js (18+) on `PATH`. The five `.jsx`
-files (`asc_*_live.jsx`) have no build tooling of their own —
-`frontend/` is a minimal dev-only Vite scaffold that imports and renders
-all five (with a tab switcher) so they can actually be viewed in a
-browser instead of only curl-tested. Not part of the deployable app:
+For active frontend development (hot reload, no rebuild step), run the
+Vite dev server directly instead of building — it talks to the API
+running separately on `:4000`:
 
 ```bash
 cd frontend
@@ -53,7 +63,9 @@ npm install
 npm run dev   # -> http://localhost:5173
 ```
 
-All five were confirmed live in a browser this way: a full learner
+The five dashboards (`asc_*_live.jsx`) are routed by role —
+`/learner`, `/employer`, `/tsp`, `/funder`, `/admin` — with `/` as a
+role picker. All five were confirmed live in a browser: a full learner
 registers through the actual 7-step wizard and a returning learner signs
 in to browse and apply to opportunities directly; real login per role on
 the other four; real API-backed dashboards; and a full write path
@@ -96,7 +108,14 @@ asc_tsp_dashboard_live.jsx            Learner pipeline (matched→shortlisted→
 asc_funder_dashboard_live.jsx          Aggregate stats + CSV export (no candidate identities)
 asc_admin_dashboard_live.jsx            Platform reporting, moderation, verification queue
 
+frontend/
+  src/main.jsx    react-router routes (/learner, /employer, /tsp, /funder, /admin) over the five dashboards above
+  vite.config.js  builds them from the repo root into frontend/dist, served by server.js in production
+
+Dockerfile        multi-stage: builds frontend/dist, then the API runtime that serves it
+docker-compose.yml   full local/CI stack — Postgres, migrate step, web app, worker
 verify.sh        rebuilds the DB from a clean drop and applies everything, in order
+DEPLOYMENT.md    what it takes to point this at a real host
 ```
 
 ## What's built (all live-tested — see `employer-api/README.md` for the details)
@@ -127,18 +146,13 @@ In roughly the order they'd block a real launch:
    accounts this project doesn't have. The pluggable seams are built
    (`verifier.js`, `notifier.js`) so wiring in a real provider later is a
    contained change, not a rewrite.
-3. **Frontend build tooling** — `frontend/` is a minimal dev-only preview
-   scaffold (used to confirm all five UIs actually work in a browser), not
-   a real production build. No routing, no code splitting, no production
-   build config, and it imports the `.jsx` files directly from the repo
-   root rather than them living inside a proper frontend app structure.
-4. **No reconciliation sweep** for missed `NOTIFY` events if the worker was
+3. **No reconciliation sweep** for missed `NOTIFY` events if the worker was
    down when something changed (see `employer-api/README.md`'s matching-job
    section).
-5. **No way to edit or delete an opportunity's requirements** after
+4. **No way to edit or delete an opportunity's requirements** after
    creation — `PATCH /api/opportunities/:id` only covers `status` and
    `match_threshold`, not the eligibility criteria themselves.
-6. **No way for a learner to edit their visibility settings** after
+5. **No way for a learner to edit their visibility settings** after
    registering — they can browse/apply/withdraw to opportunities now, but
    changing who can see their profile still requires the admin console.
 
