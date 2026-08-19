@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ShieldCheck, ShieldAlert, Wifi, WifiOff, ChevronLeft, ChevronRight, Upload, CheckCircle2, Plus, Trash2, LogOut, Lock, Search, Briefcase, LayoutDashboard, Send, XCircle } from "lucide-react";
 
-const NAVY = "#16324F";
-const TEAL = "#0E7C7B";
-const TEAL_DARK = "#0A5F5E";
+// Palette sourced from the live africaskillsconnect.co.za brand (navy #152B3C, accent orange #D9761F, warm neutrals) — kept in sync across all 5 dashboards.
+const NAVY = "#152B3C";
+const ACCENT = "#D9761F";
+const ACCENT_DARK = "#A65515";
 const GREEN = "#2F9E58";
 const RED = "#C9564D";
 const AMBER = "#E8A33D";
-const BG = "#F6F8F8";
-const BORDER = "#E1E8E8";
+const BG = "#FBF7F2";
+const BORDER = "#E8DFD3";
 const SLATE = "#3C4854";
 const MUTED = "#7E8C8C";
+const FONT_BODY = "\"Karla\", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+const FONT_DISPLAY = "\"Poppins\", \"Karla\", ui-sans-serif, system-ui, sans-serif";
 
 // Empty string in production means same-origin ("" + "/api/..." = "/api/...") —
 // the built frontend is served by the same Express process as the API
@@ -27,7 +30,7 @@ const EMPLOYMENT_STATUSES = ["Unemployed", "Employed", "Self-Employed"];
 const WORK_EXPERIENCES = ["No Experience", "Less than 1 Year", "1-2 Years", "3-5 Years", "5+ Years"];
 const OUTCOMES = ["Completed", "Did not complete"];
 const OPPORTUNITY_TYPES = ["Learnership", "Internship", "Apprenticeship", "Employment", "Skills Programme", "Bursary"];
-const POSTER_COLOR = { employer: TEAL, tsp: AMBER, funder: "#7B5EA7" };
+const POSTER_COLOR = { employer: ACCENT, tsp: AMBER, funder: "#7B5EA7" };
 const APPLICATION_STATUS_LABEL = { matched: "Matched", shortlisted: "Shortlisted", enrolled: "Enrolled", completed: "Completed", placed: "Placed", rejected: "Rejected", withdrawn: "Withdrawn" };
 const DOCUMENT_TYPES = [
   { key: "id_copy", label: "ID Copy" },
@@ -89,7 +92,7 @@ function Stepper({ current }) {
             <div style={{
               width: 22, height: 22, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 11, fontWeight: 700, color: done || active ? "#fff" : MUTED,
-              background: done ? GREEN : active ? TEAL : BORDER,
+              background: done ? GREEN : active ? ACCENT : BORDER,
             }}>{done ? "✓" : n}</div>
             <div style={{ fontSize: 10.5, fontWeight: 600, color: active ? NAVY : MUTED, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{label}</div>
           </div>
@@ -135,7 +138,7 @@ function LoginScreen({ onLogin, onSwitchToRegister, error, loading }) {
     <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
       <form onSubmit={(e) => { e.preventDefault(); onLogin(email, password); }} style={{ ...cardStyle, width: 360, maxWidth: "90vw" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <Lock size={16} color={TEAL} />
+          <Lock size={16} color={ACCENT} />
           <div style={{ fontWeight: 700, fontSize: 16, color: NAVY }}>Learner Sign In</div>
         </div>
         <div style={{ fontSize: 12.5, color: MUTED, marginBottom: 18 }}>Demo account: nomvula.k@example.co.za / Passw0rd!</div>
@@ -144,10 +147,10 @@ function LoginScreen({ onLogin, onSwitchToRegister, error, loading }) {
         <label style={labelStyle}>Password</label>
         <input style={{ ...inputStyle, width: "100%", marginBottom: 16 }} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {error && <div style={{ color: RED, fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
-        <button type="submit" disabled={loading} style={{ width: "100%", padding: "10px 0", borderRadius: 8, border: "none", cursor: "pointer", background: NAVY, color: "#fff", fontWeight: 700, fontSize: 14 }}>
+        <button type="submit" disabled={loading} style={{ width: "100%", padding: "11px 0", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg, #F2994A, #EF6F6F)", color: "#fff", fontWeight: 700, fontFamily: FONT_DISPLAY, fontSize: 14 }}>
           {loading ? "Signing in…" : "Sign In"}
         </button>
-        <button type="button" onClick={onSwitchToRegister} style={{ width: "100%", marginTop: 10, padding: "8px 0", borderRadius: 8, border: "none", background: "none", cursor: "pointer", color: TEAL_DARK, fontWeight: 600, fontSize: 12.5 }}>
+        <button type="button" onClick={onSwitchToRegister} style={{ width: "100%", marginTop: 10, padding: "8px 0", borderRadius: 8, border: "none", background: "none", cursor: "pointer", color: ACCENT_DARK, fontWeight: 600, fontSize: 12.5 }}>
           New here? Register instead
         </button>
       </form>
@@ -418,10 +421,10 @@ export default function App() {
 
   if (apiStatus !== "connected") {
     return (
-      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Registration</div>
+          <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Registration</div>
           <ApiStatus status={apiStatus} />
           {apiStatus === "error" && <OfflinePanel />}
         </div>
@@ -431,12 +434,12 @@ export default function App() {
 
   if (authStatus === "authenticated") {
     return (
-      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2 }}>My Learner Portal</div>
+              <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+              <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2 }}>My Learner Portal</div>
             </div>
             <button onClick={logout} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "#fff", color: SLATE, cursor: "pointer" }}>
               <LogOut size={13} /> Sign out
@@ -451,7 +454,7 @@ export default function App() {
 
           {portalTab === "passport" && passport && (
             <div style={cardStyle}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: TEAL, textTransform: "uppercase" }}>Digital Skills Passport</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: ACCENT, textTransform: "uppercase" }}>Digital Skills Passport</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: NAVY, marginTop: 2, marginBottom: 14 }}>{passport.full_name} {passport.surname}</div>
               <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
                 <Badge ok={passport.id_verification_status === "verified"} label={`ID ${passport.id_verification_status}`} />
@@ -510,11 +513,11 @@ export default function App() {
                         o.application_status === "withdrawn" ? (
                           <button onClick={() => applyToOpportunity(o.id)} disabled={applying === o.id} style={{
                             display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 8, cursor: "pointer",
-                            border: `1px solid ${TEAL}`, background: "#fff", color: TEAL_DARK,
+                            border: `1px solid ${ACCENT}`, background: "#fff", color: ACCENT_DARK,
                           }}><Send size={12} /> {applying === o.id ? "Saving…" : "Re-apply"}</button>
                         ) : (
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontSize: 11.5, fontWeight: 600, textTransform: "capitalize", color: TEAL_DARK }}>{APPLICATION_STATUS_LABEL[o.application_status] || o.application_status}</span>
+                            <span style={{ fontSize: 11.5, fontWeight: 600, textTransform: "capitalize", color: ACCENT_DARK }}>{APPLICATION_STATUS_LABEL[o.application_status] || o.application_status}</span>
                             {["matched", "shortlisted"].includes(o.application_status) && (
                               <button onClick={() => withdrawFromOpportunity(o.id)} disabled={applying === o.id} style={{
                                 display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 8, cursor: "pointer",
@@ -546,10 +549,10 @@ export default function App() {
 
   if (apiStatus === "connected" && authStatus === "unauthenticated" && mode === "login") {
     return (
-      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Portal</div>
+          <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Portal</div>
           <ApiStatus status={apiStatus} />
           <LoginScreen onLogin={login} onSwitchToRegister={() => { setMode("register"); setLoginError(""); }} error={loginError} loading={loggingIn} />
         </div>
@@ -559,10 +562,10 @@ export default function App() {
 
   if (authStatus === "checking") {
     return (
-      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+      <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Portal</div>
+          <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+          <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Portal</div>
           <ApiStatus status={apiStatus} />
         </div>
       </div>
@@ -570,14 +573,14 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+    <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
       <div style={{ maxWidth: 640, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Registration</div>
+            <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+            <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2, marginBottom: 8 }}>Learner Registration</div>
           </div>
-          <button onClick={() => { setMode("login"); setError(""); }} style={{ background: "none", border: "none", cursor: "pointer", color: TEAL_DARK, fontWeight: 600, fontSize: 12.5, marginTop: 4 }}>
+          <button onClick={() => { setMode("login"); setError(""); }} style={{ background: "none", border: "none", cursor: "pointer", color: ACCENT_DARK, fontWeight: 600, fontSize: 12.5, marginTop: 4 }}>
             Already registered? Sign in
           </button>
         </div>
@@ -714,7 +717,7 @@ export default function App() {
                       </div>
                     </div>
                   ))}
-                  <button onClick={addProgramme} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 8, border: `1px solid ${TEAL}`, background: "#fff", color: TEAL_DARK, cursor: "pointer" }}>
+                  <button onClick={addProgramme} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 8, border: `1px solid ${ACCENT}`, background: "#fff", color: ACCENT_DARK, cursor: "pointer" }}>
                     <Plus size={13} /> Add programme
                   </button>
                 </>
