@@ -1,0 +1,9 @@
+node_modules
+*/node_modules
+employer-api/uploads
+frontend/dist
+*.log
+.env
+employer-api/.env
+.git
+.artifacts

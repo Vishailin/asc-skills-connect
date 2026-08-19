@@ -11,6 +11,7 @@ const bcrypt = require("bcryptjs");
 const rateLimit = require("express-rate-limit");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const { Pool } = require("pg");
 const storage = require("./storage");
 const verifier = require("./verifier");
@@ -1574,6 +1575,27 @@ app.get("/api/documents/:id/download", authenticate, async (req, res) => {
 });
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
+
+// Serve the built frontend (frontend/dist, produced by `npm run build` in
+// frontend/) from this same process/origin — that's what lets the
+// dashboards call the API via a relative VITE_API_BASE="" path instead of
+// needing CORS configured for a second origin. Only registered if dist/
+// actually exists, so the API-only local dev workflow used throughout
+// this project (`node server.js` with the frontend dev server running
+// separately on :5173) is completely unaffected.
+const FRONTEND_DIST = path.join(__dirname, "../frontend/dist");
+if (fs.existsSync(FRONTEND_DIST)) {
+  app.use(express.static(FRONTEND_DIST));
+  // Anything else is a client-side route (react-router) — hand it
+  // index.html and let the browser router take over. The negative
+  // lookahead keeps this from swallowing an unmatched /api/* route,
+  // which should still 404 as a missing endpoint, not as a page.
+  app.get(/^(?!\/api\/).*/, (req, res) => {
+    res.sendFile(path.join(FRONTEND_DIST, "index.html"));
+  });
+} else {
+  console.log("[server] frontend/dist not found — serving API only. Run `npm run build` in frontend/ to also serve the app from this process.");
+}
 
 // Multer throws its errors (e.g. file too large) from inside the upload
 // middleware, before any route handler's own try/catch runs — without

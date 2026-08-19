@@ -130,6 +130,11 @@ jobs:
         run: |
           curl -sf http://localhost:4000/api/health
           curl -sf http://localhost:4000/api/career-fields > /dev/null
+          # The frontend is baked into this same image now (multi-stage
+          # build) and served same-origin — confirm the actual app loads,
+          # not just the API underneath it.
+          curl -sf http://localhost:4000/ | grep -q "ASC Skills Connect"
+          curl -sf http://localhost:4000/learner | grep -q "ASC Skills Connect"
 
       - name: Show logs
         if: always()
