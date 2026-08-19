@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { LayoutDashboard, ListChecks, Wifi, WifiOff, Download, LogOut, Lock, Plus, X, Search, ShieldCheck, ShieldAlert, Users } from "lucide-react";
 
-const NAVY = "#16324F";
-const TEAL = "#0E7C7B";
-const TEAL_DARK = "#0A5F5E";
+// Palette sourced from the live africaskillsconnect.co.za brand (navy #152B3C, accent orange #D9761F, warm neutrals) — kept in sync across all 5 dashboards.
+const NAVY = "#152B3C";
+const ACCENT = "#D9761F";
+const ACCENT_DARK = "#A65515";
 const GREEN = "#2F9E58";
 const RED = "#C9564D";
 const AMBER = "#E8A33D";
-const BG = "#F6F8F8";
-const BORDER = "#E1E8E8";
+const BG = "#FBF7F2";
+const BORDER = "#E8DFD3";
 const SLATE = "#3C4854";
 const MUTED = "#7E8C8C";
+const FONT_BODY = "\"Karla\", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+const FONT_DISPLAY = "\"Poppins\", \"Karla\", ui-sans-serif, system-ui, sans-serif";
 
 // Point this at wherever the API from employer-api/server.js is deployed.
 // Empty string in production means same-origin ("" + "/api/..." = "/api/...") —
@@ -27,7 +30,7 @@ const TOKEN_KEY = "asc_funder_token";
 // no shortlist button here — funders stay read-mostly on the *action*
 // axis even though they're no longer masked on the *identity* axis.
 const STATUS_LABEL = { matched: "Matched", shortlisted: "Shortlisted", enrolled: "Enrolled", completed: "Completed", placed: "Placed", rejected: "Rejected", withdrawn: "Withdrawn" };
-const STATUS_COLOR = { matched: MUTED, shortlisted: AMBER, enrolled: TEAL, completed: GREEN, placed: GREEN, rejected: RED, withdrawn: RED };
+const STATUS_COLOR = { matched: MUTED, shortlisted: AMBER, enrolled: ACCENT, completed: GREEN, placed: GREEN, rejected: RED, withdrawn: RED };
 
 const PROVINCES = ["Gauteng", "Western Cape", "KwaZulu-Natal", "Eastern Cape", "Limpopo", "Free State", "Mpumalanga", "North West", "Northern Cape"];
 const QUALIFICATIONS = ["Grade 10", "Grade 11", "Matric", "Certificate", "Diploma", "Degree", "Postgraduate"];
@@ -86,7 +89,7 @@ function LoginScreen({ onLogin, error, loading }) {
     <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
       <form onSubmit={(e) => { e.preventDefault(); onLogin(email, password); }} style={{ ...cardStyle, width: 360, maxWidth: "90vw" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <Lock size={16} color={TEAL} />
+          <Lock size={16} color={ACCENT} />
           <div style={{ fontWeight: 700, fontSize: 16, color: NAVY }}>Funder Sign In</div>
         </div>
         <div style={{ fontSize: 12.5, color: MUTED, marginBottom: 18 }}>Demo account: admin@mictseta.org.za / Passw0rd!</div>
@@ -95,7 +98,7 @@ function LoginScreen({ onLogin, error, loading }) {
         <label style={labelStyle}>Password</label>
         <input style={{ ...inputStyle, width: "100%", marginBottom: 16 }} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {error && <div style={{ color: RED, fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
-        <button type="submit" disabled={loading} style={{ width: "100%", padding: "10px 0", borderRadius: 8, border: "none", cursor: "pointer", background: NAVY, color: "#fff", fontWeight: 700, fontSize: 14 }}>
+        <button type="submit" disabled={loading} style={{ width: "100%", padding: "11px 0", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg, #F2994A, #EF6F6F)", color: "#fff", fontWeight: 700, fontFamily: FONT_DISPLAY, fontSize: 14 }}>
           {loading ? "Signing in…" : "Sign In"}
         </button>
       </form>
@@ -316,12 +319,12 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+    <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2 }}>Funder Dashboard</div>
+            <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+            <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2 }}>Funder Dashboard</div>
           </div>
           {authStatus === "authenticated" && (
             <button onClick={logout} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "#fff", color: SLATE, cursor: "pointer" }}>
@@ -348,10 +351,10 @@ export default function App() {
             {tab === "dashboard" && dashboard && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                 <StatCard label="Programmes posted" value={dashboard.opportunities_posted} />
-                <StatCard label="Currently open" value={dashboard.opportunities_open} color={TEAL} />
+                <StatCard label="Currently open" value={dashboard.opportunities_open} color={ACCENT} />
                 <StatCard label="Total matched" value={dashboard.total_matches} />
                 <StatCard label="Shortlisted" value={dashboard.total_shortlisted} color={AMBER} />
-                <StatCard label="Enrolled" value={dashboard.total_enrolled} color={TEAL} />
+                <StatCard label="Enrolled" value={dashboard.total_enrolled} color={ACCENT} />
                 <StatCard label="Completed" value={dashboard.total_completed} color={GREEN} />
                 <StatCard label="Placed" value={dashboard.total_placed} color={GREEN} />
               </div>
@@ -361,7 +364,7 @@ export default function App() {
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <button onClick={() => setShowNewOpp(true)} style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 5, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
-                  border: `1.5px dashed ${TEAL}`, background: "#fff", color: TEAL_DARK, fontWeight: 700, fontSize: 13,
+                  border: `1.5px dashed ${ACCENT}`, background: "#fff", color: ACCENT_DARK, fontWeight: 700, fontSize: 13,
                 }}><Plus size={14} /> New Funded Opportunity</button>
                 {programmes.length === 0 && <div style={{ ...cardStyle, color: MUTED, textAlign: "center" }}>No funded programmes posted yet.</div>}
                 {programmes.map((p) => {
@@ -395,8 +398,8 @@ export default function App() {
                           }}
                           style={{
                             display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600,
-                            padding: "7px 12px", borderRadius: 8, border: `1px solid ${TEAL}`, background: "#fff",
-                            color: TEAL_DARK, textDecoration: "none", flexShrink: 0, cursor: "pointer",
+                            padding: "7px 12px", borderRadius: 8, border: `1px solid ${ACCENT}`, background: "#fff",
+                            color: ACCENT_DARK, textDecoration: "none", flexShrink: 0, cursor: "pointer",
                           }}
                         >
                           <Download size={13} /> Export CSV
@@ -427,7 +430,7 @@ export default function App() {
                   {programmes.map((p) => (
                     <button key={p.id} onClick={() => setSelectedOppId(p.id)} style={{
                       textAlign: "left", padding: "12px 14px", borderRadius: 10, cursor: "pointer",
-                      border: `1.5px solid ${selectedOppId === p.id ? TEAL : BORDER}`,
+                      border: `1.5px solid ${selectedOppId === p.id ? ACCENT : BORDER}`,
                       background: selectedOppId === p.id ? "#E9F5F4" : "#fff", minWidth: 220,
                     }}>
                       <div style={{ fontWeight: 700, fontSize: 14, color: NAVY }}>{p.title}</div>
@@ -486,7 +489,7 @@ export default function App() {
           <div style={{ background: "#fff", borderRadius: 14, padding: 26, width: 380, maxWidth: "90vw" }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: TEAL, textTransform: "uppercase" }}>Digital Skills Passport</div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: ACCENT, textTransform: "uppercase" }}>Digital Skills Passport</div>
                 <div style={{ fontSize: 19, fontWeight: 700, color: NAVY, marginTop: 2 }}>{selectedCandidate.full_name} {selectedCandidate.surname}</div>
               </div>
               <button onClick={() => setSelectedCandidate(null)} style={{ background: "none", border: "none", cursor: "pointer", color: SLATE }}><X size={18} /></button>

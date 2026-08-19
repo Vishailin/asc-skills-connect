@@ -9,6 +9,12 @@ journey for every learner: **Register → Verify → Match → Train → Place �
 Track Employment**. Five roles (Learner, Employer, TSP, Funder, Admin),
 each with their own dashboard and permission set.
 
+The visual design (palette, Poppins/Karla type pairing, the real logo)
+is pulled directly from the live [africaskillsconnect.co.za](https://africaskillsconnect.co.za)
+marketing site, so the platform and the public site read as one brand —
+see the `// Palette sourced from...` comment at the top of each
+`asc_*_live.jsx` file for the exact source values.
+
 Full requirements: [`ASC_Skills_Connect_Technical_Spec.docx`](ASC_Skills_Connect_Technical_Spec.docx).
 Build history and the design decisions behind this repo:
 [`ASC_PROJECT_BRIEF.md`](ASC_PROJECT_BRIEF.md).

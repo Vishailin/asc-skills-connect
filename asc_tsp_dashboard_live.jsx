@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Search, X, ShieldCheck, ShieldAlert, LayoutDashboard, GraduationCap, Wifi, WifiOff, AlertTriangle, ChevronRight, LogOut, Lock, Plus, UserCheck, CheckCircle2 } from "lucide-react";
 
-const NAVY = "#16324F";
-const TEAL = "#0E7C7B";
-const TEAL_DARK = "#0A5F5E";
+// Palette sourced from the live africaskillsconnect.co.za brand (navy #152B3C, accent orange #D9761F, warm neutrals) — kept in sync across all 5 dashboards.
+const NAVY = "#152B3C";
+const ACCENT = "#D9761F";
+const ACCENT_DARK = "#A65515";
 const GREEN = "#2F9E58";
 const RED = "#C9564D";
 const AMBER = "#E8A33D";
-const BG = "#F6F8F8";
-const BORDER = "#E1E8E8";
+const BG = "#FBF7F2";
+const BORDER = "#E8DFD3";
 const SLATE = "#3C4854";
 const MUTED = "#7E8C8C";
+const FONT_BODY = "\"Karla\", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+const FONT_DISPLAY = "\"Poppins\", \"Karla\", ui-sans-serif, system-ui, sans-serif";
 
 // Point this at wherever the API from employer-api/server.js is deployed.
 // Empty string in production means same-origin ("" + "/api/..." = "/api/...") —
@@ -31,7 +34,7 @@ const STAGES = ["matched", "shortlisted", "enrolled", "completed"];
 // it's a separate outcome confirmed once a completed learner actually
 // gets hired (see the "Confirm Placement" action once stage=='completed').
 const STAGE_LABEL = { matched: "Matched", shortlisted: "Shortlisted", enrolled: "Enrolled", completed: "Completed", placed: "Placed", withdrawn: "Withdrawn" };
-const STAGE_COLOR = { matched: MUTED, shortlisted: AMBER, enrolled: TEAL, completed: GREEN, placed: GREEN, withdrawn: RED };
+const STAGE_COLOR = { matched: MUTED, shortlisted: AMBER, enrolled: ACCENT, completed: GREEN, placed: GREEN, withdrawn: RED };
 
 function ScoreRing({ score, size = 44 }) {
   const r = (size - 7) / 2;
@@ -97,7 +100,7 @@ function LoginScreen({ onLogin, error, loading }) {
     <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
       <form onSubmit={(e) => { e.preventDefault(); onLogin(email, password); }} style={{ ...cardStyle, width: 360, maxWidth: "90vw" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <Lock size={16} color={TEAL} />
+          <Lock size={16} color={ACCENT} />
           <div style={{ fontWeight: 700, fontSize: 16, color: NAVY }}>TSP Sign In</div>
         </div>
         <div style={{ fontSize: 12.5, color: MUTED, marginBottom: 18 }}>Demo account: admin@ubuntuskills.co.za / Passw0rd!</div>
@@ -106,7 +109,7 @@ function LoginScreen({ onLogin, error, loading }) {
         <label style={labelStyle}>Password</label>
         <input style={{ ...inputStyle, width: "100%", marginBottom: 16 }} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {error && <div style={{ color: RED, fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
-        <button type="submit" disabled={loading} style={{ width: "100%", padding: "10px 0", borderRadius: 8, border: "none", cursor: "pointer", background: NAVY, color: "#fff", fontWeight: 700, fontSize: 14 }}>
+        <button type="submit" disabled={loading} style={{ width: "100%", padding: "11px 0", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg, #F2994A, #EF6F6F)", color: "#fff", fontWeight: 700, fontFamily: FONT_DISPLAY, fontSize: 14 }}>
           {loading ? "Signing in…" : "Sign In"}
         </button>
       </form>
@@ -393,12 +396,12 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
+    <div style={{ background: BG, minHeight: "100%", padding: "28px 24px", fontFamily: FONT_BODY }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.2, color: TEAL, textTransform: "uppercase" }}>ASC Skills Connect</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: NAVY, marginTop: 2 }}>TSP Dashboard</div>
+            <div style={{ fontSize: 12, fontWeight: 700, fontFamily: FONT_DISPLAY, letterSpacing: 1.2, color: ACCENT, textTransform: "uppercase" }}>ASC Skills Connect</div>
+            <div style={{ fontSize: 24, fontWeight: 800, fontFamily: FONT_DISPLAY, color: NAVY, marginTop: 2 }}>TSP Dashboard</div>
           </div>
           {authStatus === "authenticated" && (
             <button onClick={logout} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "#fff", color: SLATE, cursor: "pointer" }}>
@@ -425,7 +428,7 @@ export default function App() {
             {tab === "dashboard" && dashboard && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
                 <StatCard label="Programmes posted" value={dashboard.programmes_posted} />
-                <StatCard label="Currently open" value={dashboard.programmes_open} color={TEAL} />
+                <StatCard label="Currently open" value={dashboard.programmes_open} color={ACCENT} />
                 <StatCard label="Total in pipeline" value={dashboard.pipeline_total} />
                 <StatCard label="Enrolled" value={dashboard.pipeline_enrolled} color={AMBER} />
                 <StatCard label="Completed" value={dashboard.pipeline_completed} color={GREEN} />
@@ -439,7 +442,7 @@ export default function App() {
                   {programmes.map((p) => (
                     <button key={p.id} onClick={() => setSelectedProgId(p.id)} style={{
                       textAlign: "left", padding: "12px 14px", borderRadius: 10, cursor: "pointer",
-                      border: `1.5px solid ${selectedProgId === p.id ? TEAL : BORDER}`,
+                      border: `1.5px solid ${selectedProgId === p.id ? ACCENT : BORDER}`,
                       background: selectedProgId === p.id ? "#E9F5F4" : "#fff", minWidth: 240,
                     }}>
                       <div style={{ fontWeight: 700, fontSize: 14, color: NAVY }}>{p.title}</div>
@@ -448,7 +451,7 @@ export default function App() {
                   ))}
                   <button onClick={() => setShowNewProg(true)} style={{
                     display: "flex", alignItems: "center", gap: 5, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
-                    border: `1.5px dashed ${TEAL}`, background: "#fff", color: TEAL_DARK, fontWeight: 700, fontSize: 13, minWidth: 160,
+                    border: `1.5px dashed ${ACCENT}`, background: "#fff", color: ACCENT_DARK, fontWeight: 700, fontSize: 13, minWidth: 160,
                   }}><Plus size={14} /> New Programme</button>
                 </div>
 
@@ -510,7 +513,7 @@ export default function App() {
                         ) : !isFinal && (
                           <button onClick={(e) => { e.stopPropagation(); advance(c); }} disabled={moving === c.learner_id} style={{
                             fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 8, cursor: "pointer",
-                            border: `1px solid ${TEAL}`, background: "#fff", color: TEAL_DARK, display: "flex", alignItems: "center", gap: 4,
+                            border: `1px solid ${ACCENT}`, background: "#fff", color: ACCENT_DARK, display: "flex", alignItems: "center", gap: 4,
                           }}>
                             {moving === c.learner_id ? "Saving…" : <>Move to {STAGE_LABEL[STAGES[STAGES.indexOf(stage) + 1]]} <ChevronRight size={13} /></>}
                           </button>
@@ -537,7 +540,7 @@ export default function App() {
                       </div>
                       <span style={{
                         fontSize: 11.5, fontWeight: 600, padding: "3px 9px", borderRadius: 999, textTransform: "capitalize",
-                        color: p.status === "active" ? TEAL_DARK : p.status === "completed" ? GREEN : RED,
+                        color: p.status === "active" ? ACCENT_DARK : p.status === "completed" ? GREEN : RED,
                         background: p.status === "active" ? "#E9F5F4" : p.status === "completed" ? "#E7F5EC" : "#FBEFE9",
                       }}>{p.status}</span>
                       {p.status === "active" && (
@@ -576,7 +579,7 @@ export default function App() {
           <div style={{ background: "#fff", borderRadius: 14, padding: 26, width: 380, maxWidth: "90vw" }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: TEAL, textTransform: "uppercase" }}>Digital Skills Passport</div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: ACCENT, textTransform: "uppercase" }}>Digital Skills Passport</div>
                 <div style={{ fontSize: 19, fontWeight: 700, color: NAVY, marginTop: 2 }}>{selectedCandidate.full_name} {selectedCandidate.surname}</div>
               </div>
               <button onClick={() => setSelectedCandidate(null)} style={{ background: "none", border: "none", cursor: "pointer", color: SLATE }}><X size={18} /></button>
@@ -642,7 +645,7 @@ function PlacementNotes({ placement, onSave, saving }) {
       {dirty && (
         <button onClick={() => onSave(draft)} disabled={saving} style={{
           marginTop: 6, fontSize: 12, fontWeight: 600, padding: "6px 12px", borderRadius: 8, cursor: "pointer",
-          border: `1px solid ${TEAL}`, background: "#fff", color: TEAL_DARK,
+          border: `1px solid ${ACCENT}`, background: "#fff", color: ACCENT_DARK,
         }}>{saving ? "Saving…" : "Save Note"}</button>
       )}
     </div>
