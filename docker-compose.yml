@@ -1,10 +1,11 @@
 # Prod-like local stack: real Postgres, migrations/seeds applied the
-# same way verify.sh and CI do it, then the API and worker as separate
-# containers built from the same image (employer-api/Dockerfile).
+# same way verify.sh and CI do it, then the web process (API + the
+# built frontend, served same-origin) and the worker as separate
+# containers built from the same multi-stage image (./Dockerfile).
 #
 # Usage:
 #   docker compose up --build
-#   curl http://localhost:4000/api/health
+#   open http://localhost:4000  (the actual app, not just the API)
 #
 # Not meant to replace a real deployment target's managed Postgres —
 # this is for proving the containers themselves work, and for local
@@ -50,7 +51,7 @@ services:
         done
 
   api:
-    build: ./employer-api
+    build: .
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -63,14 +64,18 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-only-secret-do-not-use-in-production}
       JWT_EXPIRES_IN: 8h
       PORT: 4000
+      # The frontend is baked into this same image and served
+      # same-origin (see Dockerfile's VITE_API_BASE=""), so this only
+      # matters if something else calls the API cross-origin.
+      CORS_ORIGIN: http://localhost:4000
       NOTIFICATION_PROVIDER: console
     ports:
       - "4000:4000"
     volumes:
-      - uploads:/app/uploads
+      - uploads:/app/employer-api/uploads
 
   worker:
-    build: ./employer-api
+    build: .
     command: ["node", "worker.js"]
     depends_on:
       migrate:
